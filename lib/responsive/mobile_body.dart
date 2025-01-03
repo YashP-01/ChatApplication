@@ -9,10 +9,9 @@ class MobileBody extends StatelessWidget {
     double screenWidth = MediaQuery.of(context).size.width;
     double screenHeight = MediaQuery.of(context).size.height;
 
-    // Padding for the screen, adjusts based on screen size
     EdgeInsetsGeometry padding = screenWidth > 600
-        ? EdgeInsets.symmetric(horizontal: 100)  // For larger screens like tablets
-        : EdgeInsets.symmetric(horizontal: 20);  // For smaller screens like phones
+        ? EdgeInsets.symmetric(horizontal: 100)
+        : EdgeInsets.symmetric(horizontal: 20);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,10 +28,10 @@ class MobileBody extends StatelessWidget {
                 // Responsive logo or header, adjusted based on screen width
                 Icon(
                   Icons.account_circle,
-                  size: screenWidth * 0.3,  // Size will adjust based on screen width
+                  size: screenWidth * 0.3,
                   color: Colors.blue,
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 25),
 
                 // Sign-Up Form
                 TextField(
@@ -76,22 +75,23 @@ class MobileBody extends StatelessWidget {
                 SizedBox(height: 20),
 
                 TextField(
-                  //obscureText: _obsecureText,
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
                     //obscureText: true,
                   ),
                 ),
-                SizedBox(height: 30),
+                SizedBox(height: 20),
 
                 TextField(
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'Confirm Password',
                     border: OutlineInputBorder(),
                   ),
                 ),
-                SizedBox(height: 20),
+                SizedBox(height: 35),
 
                 // Sign Up Button
                 ElevatedButton(
@@ -100,10 +100,9 @@ class MobileBody extends StatelessWidget {
                   },
                   child: Text('Sign Up'),
                   style: ElevatedButton.styleFrom(
-                    minimumSize: Size(screenWidth * 0.8, 50), // Button width is 80% of screen width
+                    minimumSize: Size(screenWidth * 0.8, 50),
                   ),
                 ),
-
                 SizedBox(height: 20),
 
                 // Footer Text for login redirection
