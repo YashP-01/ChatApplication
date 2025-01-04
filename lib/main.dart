@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp3/responsive/mobile_body.dart';
-import 'homepage.dart';
+import 'package:myapp3/signup_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MobileBody(),
+      home: SignupScreen(),
       theme: ThemeData(primarySwatch: Colors.deepPurple),
     );
   }
