@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:myapp3/auth/auth_service.dart';
+import 'package:myapp3/home_page.dart';
 import 'package:myapp3/login_screen.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -38,6 +40,20 @@ class _SignupScreenState extends State<SignupScreen> {
     return null;
   }
 
+  bool isValidUsername(String username) {
+    final usernameRegex = RegExp(r'^[a-zA-Z._]+$');
+    return usernameRegex.hasMatch(username);
+  }
+
+  bool isValidEmail(String email) {
+    // Regular expression for validating email
+    final emailRegex = RegExp(
+      r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+    );
+    return emailRegex.hasMatch(email);
+  }
+
+
   // Handle gender change
   void _handleGenderChange(String? value) {
     setState(() {
@@ -58,14 +74,6 @@ class _SignupScreenState extends State<SignupScreen> {
         title: Text('Sign Up'),
         centerTitle: true,
       ),
-    //   floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-    //   floatingActionButton: FloatingActionButton(
-    //       onPressed: (){},
-    //       child: Icon(Icons.add),
-    //   backgroundColor: Colors.black26,
-    //   foregroundColor: Colors.white,
-    //
-    // ),
       body: Padding(
         padding: padding,
         child: SingleChildScrollView(
@@ -87,12 +95,14 @@ class _SignupScreenState extends State<SignupScreen> {
                       TextFormField(
                         controller: _usernameController,
                         decoration: InputDecoration(
-                          labelText: 'Username',
+                          hintText: 'Username',
                           border: OutlineInputBorder(),
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter username';
+                            return 'Please enter a username';
+                          } else if (!isValidUsername(value)) {
+                            return 'Username cannot contain numbers or special characters';
                           }
                           return null;
                         },
@@ -105,12 +115,12 @@ class _SignupScreenState extends State<SignupScreen> {
                           labelText: 'Email',
                           border: OutlineInputBorder(),
                         ),
+                        keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter an email';
-                          }
-                          if (!RegExp(r"^[a-zA-Z0-9@.]+$").hasMatch(value)) {
-                            return 'Please enter a valid email address';
+                            return 'Please enter an email address';
+                          } else if (!isValidEmail(value)) {
+                            return 'Invalid email address';
                           }
                           return null;
                         },
@@ -217,17 +227,43 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       ElevatedButton(
                         onPressed: () {
-                          if (_formKey.currentState?.validate() ?? false) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Signing up...')));
+                          // get auth service
+                          final _auth = AuthService();
+                          // passwords match -> create user
+                          if(_passwordController.text == _confirmPasswordController.text) {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Signing up...')),
+                              );
 
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => LoginScreen()),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => HomePage()),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Please fill all the fields correctly.'))
+                              );
+                            }
+                            try {
+                              _auth.signUpWithEmailPassword(_emailController.text, _passwordController.text);
+                            } catch (e){
+                              showDialog(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  title: Text(e.toString()),
+                                ),
+                              );
+                            }
+                          }
+                          // passwords do not match
+                          else {
+                            showDialog(
+                              context: context,
+                              builder: (context) => const AlertDialog(
+                                title: Text("Passwords do not match"),
+                              ),
                             );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text('Please fill all the fields correctly.')));
                           }
                         },
                         child: Text('Sign Up'),
