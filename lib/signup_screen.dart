@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp3/auth/auth_service.dart';
+import 'package:myapp3/services/auth/auth_service.dart';
 import 'package:myapp3/home_page.dart';
 import 'package:myapp3/login_screen.dart';
 
@@ -235,7 +235,6 @@ class _SignupScreenState extends State<SignupScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Signing up...')),
                               );
-
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(builder: (context) => HomePage()),

@@ -6,7 +6,7 @@ class AuthService {
   // instance of auth
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  //  sign in
+  // sign in
   Future<UserCredential> signInWithEmailPassword(String email, password) async {
     try {
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(email: email, password: password,);
@@ -30,6 +30,7 @@ class AuthService {
   Future<void> signOut() async{
     return await _auth.signOut();
   }
+
   // errors
 
 }

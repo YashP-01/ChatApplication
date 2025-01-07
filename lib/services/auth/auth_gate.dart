@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:myapp3/login_screen.dart';
 import 'package:myapp3/signup_screen.dart';
 
-import '../home_page.dart';
+import '../../home_page.dart';
 
 class AuthGate extends StatelessWidget {
   const AuthGate({super.key});

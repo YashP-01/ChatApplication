@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:myapp3/auth/auth_service.dart';
+import 'package:myapp3/services/auth/auth_service.dart';
 import 'package:myapp3/home_page.dart';
 import 'package:myapp3/signup_screen.dart';
 
@@ -7,18 +7,21 @@ class LoginScreen extends StatefulWidget {
   @override
   _LoginScreenState createState() => _LoginScreenState();
   }
+
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _usernameController = TextEditingController();
+  // final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  // final TextEditingController _confirmPasswordController = TextEditingController();
 
   // bool isValidUsername(String username) {
   //   final usernameRegex = RegExp(r'^[a-zA-Z._]+$');
   //   return usernameRegex.hasMatch(username);
   // }
+
+  bool _isObscured = true;
 
   bool isValidEmail(String email) {
     // Regular expression for validating email
@@ -125,27 +128,69 @@ class _LoginScreenState extends State<LoginScreen> {
                           SizedBox(height: 20),
 
                           TextFormField(
-                            obscureText: true,
+                            obscureText: _isObscured,
                             controller: _passwordController,
                             decoration: InputDecoration(
                               labelText: 'password',
-                              border: OutlineInputBorder()
+                              border: OutlineInputBorder(),
+                              suffixIcon: IconButton(
+                                  icon: Icon(
+                                      _isObscured ? Icons.visibility_off : Icons.visibility,
+                                  ),
+                                onPressed: (){
+                                    setState(() {
+                                      _isObscured = !_isObscured;
+                                    });
+                                },
+                              )
                             ),
-                            validator: _validatePassword,
+                            validator: (value){
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a password';
+                              }
+                              if (value.length < 6) {
+                                return 'Password must be at least 6 characters';
+                              }
+                              if (!RegExp(r'\d').hasMatch(value)) {
+                                return 'Password must contain at least one number';
+                              }
+                              if (!RegExp(r'[A-Z]').hasMatch(value)) {
+                                return 'Password must contain at least one uppercase letter';
+                              }
+                              if (!RegExp(r'[!@#$%^&*(),.?":{}|<>]').hasMatch(value)) {
+                                return 'Password must contain at least one special character';
+                              }
+                              return null;
+                            },
                           ),
                           SizedBox(height: 35),
 
                           ElevatedButton(
                             onPressed: () async {
                               // auth service
-                              final authService = AuthService();
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => HomePage()),
-                              );
+                              final _auth = AuthService();
+                              if (_formKey.currentState?.validate() ?? false) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Signing in...')),
+                                );
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => HomePage()),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(content: Text('Please fill all the fields correctly.'))
+                                );
+                              }
+
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(builder: (context) => HomePage()),
+                              // );
+
                               // try login
                               try {
-                                await authService.signInWithEmailPassword(_emailController.text, _passwordController.text);
+                                await _auth.signInWithEmailPassword(_emailController.text, _passwordController.text);
                               }
 
                               // catch any errors
