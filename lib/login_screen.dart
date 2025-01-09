@@ -11,15 +11,8 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  // final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  // final TextEditingController _confirmPasswordController = TextEditingController();
-
-  // bool isValidUsername(String username) {
-  //   final usernameRegex = RegExp(r'^[a-zA-Z._]+$');
-  //   return usernameRegex.hasMatch(username);
-  // }
 
   bool _isObscured = true;
 
@@ -54,7 +47,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
 
     double screenWidth = MediaQuery.of(context).size.width;
-    double screenHeight = MediaQuery.of(context).size.height;
+    // double screenHeight = MediaQuery.of(context).size.height;
 
     EdgeInsetsGeometry padding = screenWidth > 600
         ? EdgeInsets.symmetric(horizontal: 100)
@@ -62,18 +55,20 @@ class _LoginScreenState extends State<LoginScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: true,
         title: Text('Log In'),
         centerTitle: true,
-        leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            onPressed: (){
-              // Navigate back to SignupScreen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => SignupScreen()),
-              );
-            },
-        ),
+
+        // leading: IconButton(
+        //     icon: Icon(Icons.arrow_back),
+        //     onPressed: (){
+        //       // Navigate back to SignupScreen
+        //       Navigator.push(
+        //         context,
+        //         MaterialPageRoute(builder: (context) => SignupScreen()),
+        //       );
+        //     },
+        // ),
       ),
       body: Padding(
           padding: padding,
@@ -93,23 +88,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     key: _formKey,
                       child: Column(
                         children: [
-                          // TextFormField(
-                          //   controller: _usernameController,
-                          //   decoration: InputDecoration(
-                          //       labelText: 'Username',
-                          //       border: OutlineInputBorder()
-                          //   ),
-                          //   validator: (value){
-                          //     if(value == null || value.isEmpty){
-                          //       return 'Please enter username';
-                          //     } else if(!isValidUsername(value)){
-                          //       return 'Username cannot contain numbers or special characters.';
-                          //     }
-                          //     return null;
-                          //   },
-                          // ),
-                          // SizedBox(height: 20),
-
                           TextFormField(
                             controller: _emailController,
                             decoration: InputDecoration(
@@ -182,11 +160,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     SnackBar(content: Text('Please fill all the fields correctly.'))
                                 );
                               }
-
-                              // Navigator.push(
-                              //   context,
-                              //   MaterialPageRoute(builder: (context) => HomePage()),
-                              // );
 
                               // try login
                               try {

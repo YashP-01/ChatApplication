@@ -93,23 +93,6 @@ class _SignupScreenState extends State<SignupScreen> {
                   child: Column(
                     children: [
                       TextFormField(
-                        controller: _usernameController,
-                        decoration: InputDecoration(
-                          hintText: 'Username',
-                          border: OutlineInputBorder(),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a username';
-                          } else if (!isValidUsername(value)) {
-                            return 'Username cannot contain numbers or special characters';
-                          }
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 20),
-
-                      TextFormField(
                         controller: _emailController,
                         decoration: InputDecoration(
                           labelText: 'Email',
@@ -126,74 +109,6 @@ class _SignupScreenState extends State<SignupScreen> {
                         },
                       ),
                       SizedBox(height: 20),
-
-                      // Gender Selection (Radio Buttons)
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.only(bottom: 10),
-                          child: Text(
-                            'Gender',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ),
-                      ),
-                      Wrap(
-                        spacing: 10, // Horizontal space between radio buttons
-                        runSpacing: 10, // Vertical space between radio buttons
-                        children: [
-                          // Male Radio Button
-                          Row(
-                            children: [
-                              Radio<String>(
-                                value: 'Male',
-                                groupValue: _selectedGender,
-                                onChanged: _handleGenderChange,
-                              ),
-                              Text("Male"),
-                            ],
-                          ),
-                          // Female Radio Button
-                          Row(
-                            children: [
-                              Radio<String>(
-                                value: 'Female',
-                                groupValue: _selectedGender,
-                                onChanged: _handleGenderChange,
-                              ),
-                              Text("Female"),
-                            ],
-                          ),
-                          // Other Radio Button
-                          Row(
-                            children: [
-                              Radio<String>(
-                                value: 'Other',
-                                groupValue: _selectedGender,
-                                onChanged: _handleGenderChange,
-                              ),
-                              Text("Other"),
-                            ],
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: 20),
-
-                      // TextField(
-                      //   decoration: InputDecoration(
-                      //     labelText: 'Country',
-                      //     border: OutlineInputBorder(),
-                      //   ),
-                      // ),
-                      // SizedBox(height: 20),
-                      //
-                      // TextField(
-                      //   decoration: InputDecoration(
-                      //     labelText: 'Region',
-                      //     border: OutlineInputBorder(),
-                      //   ),
-                      // ),
-                      // SizedBox(height: 20),
 
                       TextFormField(
                         controller: _passwordController,
