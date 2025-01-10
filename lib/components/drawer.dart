@@ -15,6 +15,12 @@ class MyDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // EdgeInsetsGeometry padding = screenWidth > 600
+    //     ? EdgeInsets.symmetric(horizontal: 100)
+    //     : EdgeInsets.symmetric(horizontal: 20);
+
     return Drawer(
       backgroundColor: Theme.of(context).colorScheme.background,
       child: SingleChildScrollView(
@@ -63,7 +69,10 @@ class MyDrawer extends StatelessWidget {
 
             // logout list title
             Padding(
-              padding: const EdgeInsets.only(left: 100.0 * 0.3,),
+              padding: EdgeInsets.symmetric(
+                  horizontal: MediaQuery.of(context).size.width * 0.05,
+                  vertical: MediaQuery.of(context).size.height * 0.02
+              ),
               child: ListTile(
                 title: Text('LOGOUT'),
                 leading: Icon(Icons.logout),

@@ -11,33 +11,28 @@ class ChatService {
 
   // get user stream
   Stream<List<Map<String, dynamic>>> getUserStream() {
-    return _firestore.collection("Users").snapshots().map((snapshot){
-      return snapshot.docs.map((doc){
+    return FirebaseFirestore.instance
+        .collection('Users')
+        .where('isActive', isEqualTo: true) // Fetch only active users
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) => doc.data()).toList());
+  }
 
-      // go through each individual user
-        final user = doc.data();
-
-      // return user
-       return user;
-    }).toList();
-  });
-}
 
   // send message
-  Future<void> sendMessage(String receiverId, message) async {
+  Future<void> sendMessage(String receiverId, String message) async {
     // get current user info
     final String currentUserID = _auth.currentUser!.uid;
     final String currentUserEmail = _auth.currentUser!.email!;
     final Timestamp timestamp = Timestamp.now();
 
-
     // create a new message
     Message newMessage = Message(
-        senderID: currentUserEmail,
-        senderEmail: currentUserID,
-        receiverID: receiverId,
-        message: message,
-        timestamp: timestamp,
+      senderID: currentUserID, // Fix: Use currentUserID as senderID
+      senderEmail: currentUserEmail, // Fix: Use currentUserEmail as senderEmail
+      receiverID: receiverId,
+      message: message,
+      timestamp: timestamp,
     );
 
     // construct chat room ID for the two users (sorted to ensure uniqueness)
@@ -45,26 +40,26 @@ class ChatService {
     ids.sort();
     String chatRoomID = ids.join('_');
 
-    // add new message to database
+    // add new message to the database
     await _firestore
         .collection("chat_rooms")
         .doc(chatRoomID)
-        .collection("message")
+        .collection("messages") // Fix: Ensure this matches the `getMessages` collection name
         .add(newMessage.toMap());
   }
 
-  // get message
-  Stream<QuerySnapshot> getMessage(String useID, otherUserID) {
+  // get messages
+  Stream<QuerySnapshot> getMessages(String userID, String otherUserID) {
 
     // construct the chat room id for the two users
-    List<String> ids = [useID, otherUserID];
+    List<String> ids = [userID, otherUserID];
     ids.sort();
     String chatRoomID = ids.join('_');
 
-    return _firestore
+    return FirebaseFirestore.instance
         .collection("chat_rooms")
         .doc(chatRoomID)
-        .collection("messages")
+        .collection("messages") // Fix: Consistent naming with `sendMessage`
         .orderBy("timestamp", descending: true)
         .snapshots();
   }

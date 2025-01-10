@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
 
 class AuthService {
   // Instance of auth & Firestore
@@ -14,10 +13,6 @@ class AuthService {
 
   // Sign in with email and password
   Future<UserCredential> signInWithEmailPassword(String email, String password) async {
-    // if (email.isEmpty || password.isEmpty) {
-    //   throw Exception('Email and password cannot be empty');
-    // }
-
     try {
       // Sign user in
       UserCredential userCredential = await _auth.signInWithEmailAndPassword(
@@ -25,13 +20,16 @@ class AuthService {
         password: password,
       );
 
-      // Save user info if it doesn't already exist
+      // Mark user is active in Firestore
       if (userCredential.user != null) {
+        bool myuser = true;
         await _firestore.collection('Users').doc(userCredential.user!.uid).set(
           {
             'uid': userCredential.user!.uid,
             'email': email,
+            'isActive': myuser, // Mark as active
           },
+          SetOptions(merge: false), // Update existing fields without overwriting
         );
       }
 
@@ -50,16 +48,17 @@ class AuthService {
     try {
       // Create user
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
-          email: email,
-          password: password
+        email: email,
+        password: password,
       );
 
-      // Save user info in a separate document
+      // Save user info in Firestore
       if (userCredential.user != null) {
         await _firestore.collection('Users').doc(userCredential.user!.uid).set(
           {
             'uid': userCredential.user!.uid,
             'email': email,
+            'isActive': true, // Mark as active upon sign-up
           },
         );
       }
@@ -72,6 +71,29 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
-    return await _auth.signOut();
+    try {
+      // Mark user as inactive before signing out
+      final user = _auth.currentUser;
+      if (user != null) {
+        await _firestore.collection('Users').doc(user.uid).update(
+          {'isActive': false}, // Mark as inactive
+        );
+      }
+
+      await _auth.signOut();
+    } catch (e) {
+      throw Exception('Error signing out: ${e.toString()}');
+    }
+  }
+
+  // Update user status
+  Future<void> updateUserStatus(String userId, bool isActive) async {
+    try {
+      await _firestore.collection('Users').doc(userId).update(
+        {'isActive': isActive},
+      );
+    } catch (e) {
+      throw Exception('Error updating user status: ${e.toString()}');
+    }
   }
 }

@@ -8,7 +8,6 @@ import 'package:myapp3/services/chat/chat_service.dart';
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  // chat & auth services
   final ChatService _chatService = ChatService();
   final AuthService _authService = AuthService();
 
@@ -17,70 +16,72 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
         centerTitle: true,
       ),
       drawer: const MyDrawer(),
-      body: _buildUserList(context), // Pass context to the function
+      body: _buildUserList(context),
     );
   }
 
-  // Build a list of users except for the current logged-in user
   Widget _buildUserList(BuildContext context) {
     return StreamBuilder(
-      stream: _chatService.getUserStream(),
+      stream: _chatService.getUserStream(), // Ensure this returns only current users
       builder: (context, snapshot) {
-        // Error handling
         if (snapshot.hasError) {
           return const Center(child: Text('Error loading users'));
         }
 
-        // Loading indicator
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        // Ensure snapshot data is not null
-        // if (!snapshot.hasData || snapshot.data == null) {
-        //   return const Center(child: Text('No users found'));
-        // }
+        if (!snapshot.hasData || snapshot.data == null) {
+          return const Center(child: Text('No users found'));
+        }
 
-        // Get users from the snapshot data and map to UserTile widgets
+        final users = snapshot.data as List<Map<String, dynamic>>;
+
+        final currentUser = _authService.getCurrentUser();
+        if (currentUser == null) {
+          return const Center(child: Text('No logged-in user found'));
+        }
+
+        // Filter to show only active users (exclude current user)
+        final activeUsers = users.where((user) {
+          final userEmail = user["email"] as String?;
+          final userActive = user["isActive"] as bool? ?? false; // Adjust based on your schema
+          return userEmail != null &&
+              userActive &&
+              userEmail != currentUser.email;
+        }).toList();
+
+        if (activeUsers.isEmpty) {
+          return const Center(child: Text('No active users found'));
+        }
+
         return ListView(
-          children: snapshot.data!.map<Widget>((userData) {
-            return _buildUserListItem(userData, context);
-          }).toList(),
+          children: activeUsers.map((user) => _buildUserListItem(user, context)).toList(),
         );
       },
     );
   }
 
-  // build individual list tile for user
   Widget _buildUserListItem(Map<String, dynamic> userData, BuildContext context) {
-    // Ensure that the 'name' field is non-null and has a fallback value if it's null
-    String userName = userData['name'] ?? 'Unknown User';  // Default to 'Unknown User' if null
-
-    // Ensure that the 'email' field is non-null and has a fallback value if it's null
-    String userEmail = userData['email'] ?? 'No Email Provided';  // Default to 'No Email Provided' if null
-
-    // Display all users except the current logged-in user
-    if (userData["email"] != _authService.getCurrentUser()!.email) {
-      return UserTile(
-        text: userData["email"],
-        onTap: () {
-          // Tapped on a user -> go to chat page
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatPage(
-                receiverEmail: userData["email"],
-                receiverID: userData["uid"],
-              ),
+    return UserTile(
+      text: userData["email"] ?? 'Unknown User',
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              receiverEmail: userData["email"] ?? '',
+              receiverID: userData["uid"] ?? '',
             ),
-          );
-        },
-      );
-    } else {
-      return Container();
-    }
+          ),
+        );
+      },
+    );
   }
 }

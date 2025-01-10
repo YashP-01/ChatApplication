@@ -1,7 +1,7 @@
 plugins {
     id "com.android.application"
     // START: FlutterFire Configuration
-    id 'com.google.gms.google-services'
+    id 'com.google.gms.google-services' // Apply Google services plugin
     // END: FlutterFire Configuration
     id "kotlin-android"
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -25,13 +25,24 @@ android {
     defaultConfig {
         minSdkVersion 23
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.myapp3"
+        applicationId = "com.example.myapp3"  // Make sure this matches the Firebase console package name
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+    }
+
+    dependencies {
+        // Firebase dependencies for Analytics, Auth, Firestore
+        implementation 'com.google.firebase:firebase-analytics:21.0.0'
+        implementation 'com.google.firebase:firebase-auth:21.0.1'
+        implementation 'com.google.firebase:firebase-firestore:24.0.0'
+
+        // Google Play Services dependencies for authentication and other services
+        implementation 'com.google.android.gms:play-services-auth:19.2.0'
+        implementation 'com.google.android.gms:play-services-base:18.0.0'
     }
 
     buildTypes {
@@ -41,8 +52,19 @@ android {
             signingConfig = signingConfigs.debug
         }
     }
+
+    buildscript {
+        repositories {
+            google()  // Ensure this is included to get the necessary Google services
+            mavenCentral()
+        }
+        dependencies {
+            // Ensure you are using the latest version of the Google services plugin
+            classpath 'com.google.gms:google-services:4.3.10'  // Ensure this is the latest version of the plugin
+        }
+    }
 }
 
 flutter {
-    source = "../.."
+    source = "../.."  // Ensure this points to the correct location of your Flutter source code
 }
